@@ -109,7 +109,7 @@ Game ||--o{ Review : has
 User ||--o{ CloudSave : saves
 Game ||--o{ CloudSave : supports
 
-User ||--o{ Achievement : unlocks
+User }o--o{ Achievement : unlocks
 Game ||--o{ Achievement : defines
 
 Game }o--o{ Tag : tagged_with
