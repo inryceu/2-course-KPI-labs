@@ -1,0 +1,77 @@
+############################
+# Dependencies
+############################
+node_modules/
+jspm_packages/
+
+############################
+# Build outputs
+############################
+dist/
+build/
+out/
+tmp/
+temp/
+
+############################
+# Logs
+############################
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+############################
+# Runtime data
+############################
+pids
+*.pid
+*.seed
+*.pid.lock
+
+############################
+# Coverage & tests
+############################
+coverage/
+.nyc_output/
+*.lcov
+
+############################
+# Environment files
+############################
+.env
+.env.local
+.env.*.local
+
+############################
+# Cache
+############################
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+.eslintcache
+tsconfig.tsbuildinfo
+
+############################
+# IDE / Editors
+############################
+.vscode/
+.idea/
+*.code-workspace
+
+############################
+# Misc
+############################
+*.tgz
+*.log
+*.tmp
+*.swp
+*.lock-wscript
+
+# OS
+.DS_Store
+Thumbs.db
