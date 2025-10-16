@@ -36,13 +36,13 @@ package "Steam Platform" {
   usecase "Load Progress from Cloud" as UC_LoadCloud
 
   ' --- Developer Use Cases ---
-  usecase "Publish Game" as UC_DevPublish
   usecase "Update Game Info" as UC_DevUpdate
   usecase "Define Achievements" as UC_DevAchievements
-  usecase "Organize Sale/Event" as UC_DevEvent
 
   ' --- Publisher Use Cases ---
+  usecase "Publish Game" as UC_PubPublish
   usecase "Manage Game Catalog" as UC_PubCatalog
+  usecase "Organize Sale/Event" as UC_PubEvent
   usecase "Track Game Performance" as UC_PubPerformance
 
   ' --- External ---
@@ -68,12 +68,12 @@ Gamer --> UC_SaveCloud
 Gamer --> UC_LoadCloud
 Gamer --> UC_DLC
 
-Dev --> UC_DevPublish
 Dev --> UC_DevUpdate
 Dev --> UC_DevAchievements
-Dev --> UC_DevEvent
 
+Pub --> UC_PubPublish
 Pub --> UC_PubCatalog
+Pub --> UC_PubEvent
 Pub --> UC_PubPerformance
 
 PaySys --> UC_Payment
@@ -84,9 +84,9 @@ UC_Purchase --> UC_Payment : <<include>>
 UC_SaveCloud --> UC_SyncCloud : <<include>>
 UC_LoadCloud --> UC_SyncCloud : <<include>>
 UC_Play --> UC_Install : <<include>>
-UC_Play --> UC_Achievement : <<extend>>
-UC_Play --> UC_Track : <<extend>>
-UC_Play --> UC_SaveCloud : <<extend>>
+UC_Play <-- UC_Achievement : <<extend>>
+UC_Play <-- UC_Track : <<extend>>
+UC_Play <-- UC_SaveCloud : <<extend>>
 UC_View --> UC_Search : <<include>>
 
 @enduml
