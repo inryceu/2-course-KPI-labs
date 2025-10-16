@@ -1,0 +1,92 @@
+@startuml
+!theme blueprint
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor<<external>> LightBlue
+  BorderColor DarkSlateGray
+}
+
+' --- Actors ---
+actor "Gamer" as Gamer
+actor "Developer" as Dev
+actor "Publisher" as Pub
+actor "External Payment System" as PaySys <<external>>
+actor "Cloud Storage Service" as CloudSys <<external>>
+
+' --- Use Cases ---
+package "Steam Platform" {
+
+  ' --- Gamer Use Cases ---
+  usecase "Browse Games" as UC_Browse
+  usecase "Search Games by Tag" as UC_Search
+  usecase "View Game Details" as UC_View
+  usecase "Add to Wishlist" as UC_Wishlist
+  usecase "Purchase Game" as UC_Purchase
+  usecase "Install Game" as UC_Install
+  usecase "Play Game" as UC_Play
+  usecase "Track Playtime" as UC_Track
+  usecase "Manage DLCs" as UC_DLC
+  usecase "Write Review" as UC_WriteReview
+  usecase "Read Reviews" as UC_ReadReview
+  usecase "Add Friend" as UC_AddFriend
+  usecase "Accept/Block Friend" as UC_FriendStatus
+  usecase "Unlock Achievement" as UC_Achievement
+  usecase "Save Progress to Cloud" as UC_SaveCloud
+  usecase "Load Progress from Cloud" as UC_LoadCloud
+
+  ' --- Developer Use Cases ---
+  usecase "Update Game Info" as UC_DevUpdate
+  usecase "Define Achievements" as UC_DevAchievements
+
+  ' --- Publisher Use Cases ---
+  usecase "Publish Game" as UC_PubPublish
+  usecase "Manage Game Catalog" as UC_PubCatalog
+  usecase "Organize Sale/Event" as UC_PubEvent
+  usecase "Track Game Performance" as UC_PubPerformance
+
+  ' --- External ---
+  usecase "Process Payment" as UC_Payment
+  usecase "Sync Cloud Data" as UC_SyncCloud
+}
+
+' --- Associations ---
+Gamer --> UC_Browse
+Gamer --> UC_Search
+Gamer --> UC_View
+Gamer --> UC_Wishlist
+Gamer --> UC_Purchase
+Gamer --> UC_Install
+Gamer --> UC_Play
+Gamer --> UC_Track
+Gamer --> UC_AddFriend
+Gamer --> UC_FriendStatus
+Gamer --> UC_WriteReview
+Gamer --> UC_ReadReview
+Gamer --> UC_Achievement
+Gamer --> UC_SaveCloud
+Gamer --> UC_LoadCloud
+Gamer --> UC_DLC
+
+Dev --> UC_DevUpdate
+Dev --> UC_DevAchievements
+
+Pub --> UC_PubPublish
+Pub --> UC_PubCatalog
+Pub --> UC_PubEvent
+Pub --> UC_PubPerformance
+
+PaySys --> UC_Payment
+CloudSys --> UC_SyncCloud
+
+' --- Includes and Extends ---
+UC_Purchase --> UC_Payment : <<include>>
+UC_SaveCloud --> UC_SyncCloud : <<include>>
+UC_LoadCloud --> UC_SyncCloud : <<include>>
+UC_Play --> UC_Install : <<include>>
+UC_Play <-- UC_Achievement : <<extend>>
+UC_Play <-- UC_Track : <<extend>>
+UC_Play <-- UC_SaveCloud : <<extend>>
+UC_View --> UC_Search : <<include>>
+
+@enduml
