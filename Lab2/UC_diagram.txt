@@ -87,6 +87,6 @@ UC_Play --> UC_Install : <<include>>
 UC_Play <-- UC_Achievement : <<extend>>
 UC_Play <-- UC_Track : <<extend>>
 UC_Play <-- UC_SaveCloud : <<extend>>
-UC_View --> UC_Search : <<include>>
+UC_Browse --> UC_Search : <<include>>
 
 @enduml
