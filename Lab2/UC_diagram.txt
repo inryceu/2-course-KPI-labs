@@ -11,8 +11,6 @@ skinparam usecase {
 actor "Gamer" as Gamer
 actor "Developer" as Dev
 actor "Publisher" as Pub
-actor "External Payment System" as PaySys <<external>>
-actor "Cloud Storage Service" as CloudSys <<external>>
 
 ' --- Use Cases ---
 package "Steam Platform" {
@@ -75,9 +73,6 @@ Pub --> UC_PubPublish
 Pub --> UC_PubCatalog
 Pub --> UC_PubEvent
 Pub --> UC_PubPerformance
-
-PaySys --> UC_Payment
-CloudSys --> UC_SyncCloud
 
 ' --- Includes and Extends ---
 UC_Purchase --> UC_Payment : <<include>>
