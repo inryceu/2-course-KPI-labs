@@ -1,0 +1,77 @@
+@startuml
+!theme blueprint
+title Sequence Diagram: "User searches, purchases, installs, plays, and reviews a game"
+
+actor "Gamer" as User
+participant "UI / Frontend" as UI
+participant "GameService" as GameService
+participant "PaymentService" as PaymentService
+participant "LibraryService" as LibraryService
+participant "Installer" as Installer
+participant "GameClient" as GameClient
+participant "ReviewService" as ReviewService
+database "Database" as DB
+
+== Search and View Game ==
+User -> UI : Open store page
+UI -> GameService : searchGames(query)
+GameService -> DB : SELECT * FROM Game WHERE title LIKE query OR tags LIKE query
+DB --> GameService : list of matching games
+GameService --> UI : games list
+UI -> User : Display search results
+
+User -> UI : Select a game
+UI -> GameService : getGameDetails(gameId)
+GameService -> DB : SELECT * FROM Game WHERE id = gameId
+DB --> GameService : game details + price + system req.
+GameService --> UI : game details
+UI -> User : Show Game Page
+
+== Purchase ==
+User -> UI : Click "Buy"
+UI -> GameService : initiatePurchase(userId, gameId)
+GameService -> PaymentService : processPayment(userId, game.price)
+PaymentService -> DB : INSERT INTO Transactions(...)
+DB --> PaymentService : confirmation
+PaymentService --> GameService : paymentSuccess()
+GameService -> LibraryService : addGameToLibrary(userId, gameId, ownershipType="purchased")
+LibraryService -> DB : INSERT INTO Library(...)
+DB --> LibraryService : OK
+LibraryService --> GameService : success
+GameService --> UI : purchaseSuccess
+UI -> User : Show "Game Purchased"
+
+== Install Game ==
+User -> UI : Click "Install"
+UI -> Installer : downloadAndInstall(gameId)
+Installer -> DB : UPDATE Library SET status='installed'
+DB --> Installer : OK
+Installer --> UI : installationComplete
+UI -> User : Show "Game Installed"
+
+== Play Game ==
+User -> UI : Launch Game
+UI -> GameClient : startGame(gameId)
+GameClient -> DB : UPDATE Library SET status='in progress', last_played=NOW()
+DB --> GameClient : OK
+GameClient -> User : Game running
+...during gameplay...
+GameClient -> DB : UPDATE Library SET hours_played += sessionTime
+GameClient -> DB : INSERT INTO Achievement(...) (optional)
+GameClient -> DB : INSERT INTO CloudSave(...)
+
+== Write Review ==
+User -> UI : Write Review (rating + text)
+UI -> ReviewService : submitReview(userId, gameId, rating, text)
+ReviewService -> DB : INSERT INTO Review(user_id, game_id, rating, text)
+DB --> ReviewService : OK
+ReviewService --> UI : reviewPosted
+UI -> User : Show "Review submitted successfully"
+
+== Alternate Flow ==
+opt Payment Failed
+  PaymentService --> GameService : paymentFailed()
+  GameService --> UI : showError("Payment failed")
+end
+
+@enduml
