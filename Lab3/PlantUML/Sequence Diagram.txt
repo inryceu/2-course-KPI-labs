@@ -14,64 +14,121 @@ database "Database" as DB
 
 == Search and View Game ==
 User -> UI : Open store page
+activate UI
 UI -> GameService : searchGames(query)
+activate GameService
 GameService -> DB : SELECT * FROM Game WHERE title LIKE query OR tags LIKE query
+activate DB
 DB --> GameService : list of matching games
+deactivate DB
 GameService --> UI : games list
+deactivate GameService
 UI -> User : Display search results
+deactivate UI
 
 User -> UI : Select a game
+activate UI
 UI -> GameService : getGameDetails(gameId)
+activate GameService
 GameService -> DB : SELECT * FROM Game WHERE id = gameId
+activate DB
 DB --> GameService : game details + price + system req.
+deactivate DB
 GameService --> UI : game details
+deactivate GameService
 UI -> User : Show Game Page
+deactivate UI
 
 == Purchase ==
 User -> UI : Click "Buy"
+activate UI
 UI -> GameService : initiatePurchase(userId, gameId)
+activate GameService
 GameService -> PaymentService : processPayment(userId, game.price)
+activate PaymentService
 PaymentService -> DB : INSERT INTO Transactions(...)
+activate DB
 DB --> PaymentService : confirmation
-PaymentService --> GameService : paymentSuccess()
-GameService -> LibraryService : addGameToLibrary(userId, gameId, ownershipType="purchased")
-LibraryService -> DB : INSERT INTO Library(...)
-DB --> LibraryService : OK
-LibraryService --> GameService : success
-GameService --> UI : purchaseSuccess
-UI -> User : Show "Game Purchased"
+deactivate DB
+
+alt payment successful
+    PaymentService --> GameService : paymentSuccess()
+    deactivate PaymentService
+    GameService -> LibraryService : addGameToLibrary(userId, gameId, ownershipType="purchased")
+    activate LibraryService
+    LibraryService -> DB : INSERT INTO Library(...)
+    activate DB
+    DB --> LibraryService : OK
+    deactivate DB
+    LibraryService --> GameService : success
+    deactivate LibraryService
+    GameService --> UI : purchaseSuccess
+    deactivate GameService
+    UI -> User : Show "Game Purchased"
+    deactivate UI
+else Payment Failed
+    PaymentService --> GameService : paymentFailed()
+    deactivate PaymentService
+    GameService --> UI : showError("Payment failed")
+    deactivate GameService
+    UI -> User : Show Error Message
+    deactivate UI
+end
+
 
 == Install Game ==
 User -> UI : Click "Install"
+activate UI
 UI -> Installer : downloadAndInstall(gameId)
+activate Installer
 Installer -> DB : UPDATE Library SET status='installed'
+activate DB
 DB --> Installer : OK
+deactivate DB
 Installer --> UI : installationComplete
+deactivate Installer
 UI -> User : Show "Game Installed"
+deactivate UI
 
 == Play Game ==
 User -> UI : Launch Game
+activate UI
 UI -> GameClient : startGame(gameId)
+activate GameClient
+deactivate UI
+
 GameClient -> DB : UPDATE Library SET status='in progress', last_played=NOW()
+activate DB
 DB --> GameClient : OK
+deactivate DB
+
 GameClient -> User : Game running
 ...during gameplay...
 GameClient -> DB : UPDATE Library SET hours_played += sessionTime
+activate DB
+deactivate DB
 GameClient -> DB : INSERT INTO Achievement(...) (optional)
+activate DB
+deactivate DB
 GameClient -> DB : INSERT INTO CloudSave(...)
+activate DB
+deactivate DB
+
+User -> GameClient : User Quits Game
+destroy GameClient
 
 == Write Review ==
 User -> UI : Write Review (rating + text)
+activate UI
 UI -> ReviewService : submitReview(userId, gameId, rating, text)
+activate ReviewService
 ReviewService -> DB : INSERT INTO Review(user_id, game_id, rating, text)
+activate DB
 DB --> ReviewService : OK
+deactivate DB
 ReviewService --> UI : reviewPosted
+deactivate ReviewService
 UI -> User : Show "Review submitted successfully"
-
-== Alternate Flow ==
-opt Payment Failed
-  PaymentService --> GameService : paymentFailed()
-  GameService --> UI : showError("Payment failed")
-end
+deactivate UI
 
 @enduml
