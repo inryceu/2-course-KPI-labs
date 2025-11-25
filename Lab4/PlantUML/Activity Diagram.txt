@@ -1,0 +1,148 @@
+@startuml
+!theme blueprint
+skinparam swimlaneBorderColor black
+skinparam nodesep 50
+skinparam ranksep 50
+skinparam conditionStyle diamond
+
+|Gamer|
+start
+
+repeat
+    |Gamer|
+    :Enter Search Query;
+    :Query String; <<input>>
+    
+    |Application|
+    :Receive & Process Request;
+    :Search Parameters; <<output>>
+    
+    |External Systems|
+    :Execute SQL Query;
+    :RecordSet; <<output>>
+    
+    |Application|
+    :Format Results;
+repeat while (Games Found?) is (No)
+
+-> Yes;
+:Display Game List;
+
+|Gamer|
+:Select Game;
+:View Details;
+
+|Application|
+:Request Metadata;
+:Metadata Request; <<output>>
+
+|External Systems|
+:Retrieve Game Info;
+:Game Details Blob; <<output>>
+
+|Application|
+:Render Page;
+
+' --- Decision: System Requirements ---
+if (System Requirements Met?) then (No)
+    :Show Warning;
+    |Gamer|
+    if (Proceed Anyway?) then (No)
+        |Application|
+        :Cancel Operation;
+        stop
+    else (Yes)
+        ' Continue flow
+    endif
+else (Yes)
+endif
+
+|Gamer|
+:Click "Buy";
+
+' --- Purchase Loop ---
+|Application|
+repeat
+    :Create Order Object;
+    :Payment Request; <<output>>
+    
+    |External Systems|
+    :Process Transaction;
+    note right: Validates Payment Info
+    
+    :Auth Token; <<output>>
+    note right: Success/Fail Status
+    
+    |Application|
+    :Check Authorization;
+repeat while (Payment Authorized?) is (No)
+
+-> Yes;
+:Grant License;
+:Update Library Record;
+
+|Gamer|
+:Click "Install";
+
+' --- Parallel Installation ---
+|Application|
+fork
+    :Check Disk Space;
+fork again
+    :Request Assets;
+    :Manifest Request; <<output>>
+    
+    |External Systems|
+    :Stream Game Files;
+    :Binary Data Stream; <<output>>
+end fork
+
+|Application|
+:Install & Validate;
+
+|Gamer|
+:Launch Game;
+
+|Application|
+:Initialize Engine;
+
+' --- Parallel Gameplay & Background Services ---
+fork
+    |Gamer|
+    :Play Game;
+    :Input Events; <<input>>
+fork again
+    |Application|
+    :Background Service Loop;
+    
+    |External Systems|
+    :Sync Data;
+    :Cloud Save State; <<output>>
+end fork
+
+|Gamer|
+:Quit Game;
+
+|Application|
+:Terminate Session;
+
+' --- Post-Game Review ---
+if (Write Review?) then (Yes)
+    |Gamer|
+    :Submit Rating & Text;
+    :Review Content; <<input>>
+    
+    |Application|
+    :Validate Content;
+    :Sanitized Review; <<output>>
+    
+    |External Systems|
+    :Insert Review Record;
+else (No)
+endif
+
+|Application|
+:Close Application;
+stop
+
+@enduml
